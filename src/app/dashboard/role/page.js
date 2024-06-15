@@ -1,0 +1,97 @@
+'use client';
+
+import * as React from 'react';
+import Button from '@mui/material/Button';
+import Stack from '@mui/material/Stack';
+import Typography from '@mui/material/Typography';
+import { useState, useEffect } from 'react';
+import { Download as DownloadIcon } from '@phosphor-icons/react/dist/ssr/Download';
+import { Plus as PlusIcon } from '@phosphor-icons/react/dist/ssr/Plus';
+import { Upload as UploadIcon } from '@phosphor-icons/react/dist/ssr/Upload';
+
+import { CustomersFilters } from '@/components/dashboard/customer/customers-filters';
+import { RoleAdd } from '@/components/dashboard/role/roleAdd';
+import { RoleTable } from '@/components/dashboard/role/roleTable';
+import { useUserStore } from "@/store/useStore";
+
+export default function Page() {
+  const [openAddModal, setOpenAddModal] = useState(false);
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
+
+  const [userDetails, setUserDetails] = useUserStore((state) => [
+    state.userDetailsStore,
+    state.updateUserDetails,
+  ]);
+
+  const [roles, setRoles] = useUserStore((state) => [
+    state.rolesStore,
+    state.setRoles,
+  ]);
+
+  // console.log("userDetails at render:", userDetails);
+  // console.log("roles at render:", roles);
+
+  const handleUserDetailsUpdate = (newDetails) => {
+    setUserDetails(newDetails);
+  };
+
+  const handleRolesUpdate = (newRoles) => {
+    setRoles(newRoles);
+  };
+
+  const addRole = (roleData) => {
+    handleRolesUpdate([...roles, roleData]);
+  };
+
+  useEffect(() => {
+    // For demonstration, let's assume we set some initial user details if they are null
+    if (userDetails === null) {
+      // console.log("Setting initial user details");
+      handleUserDetailsUpdate({ name: 'John Doe', email: 'john.doe@example.com' });
+    }
+  }, [userDetails]);
+
+  const paginatedRoles = applyPagination(roles, page, rowsPerPage);
+
+  return (
+    <Stack spacing={3}>
+      <Stack direction="row" spacing={3}>
+        <Stack spacing={1} sx={{ flex: '1 1 auto' }}>
+          <Typography variant="h4">Role</Typography>
+          <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
+            <Button color="inherit" startIcon={<UploadIcon fontSize="var(--icon-fontSize-md)" />}>
+              Import
+            </Button>
+            <Button color="inherit" startIcon={<DownloadIcon fontSize="var(--icon-fontSize-md)" />}>
+              Export
+            </Button>
+          </Stack>
+        </Stack>
+        <div>
+          <Button
+            startIcon={<PlusIcon fontSize="var(--icon-fontSize-md)" />}
+            variant="contained"
+            onClick={() => setOpenAddModal(true)}
+          >
+            Add
+          </Button>
+        </div>
+      </Stack>
+      {/* <CustomersFilters /> */}
+      <RoleTable
+        count={roles.length}
+        page={page}
+        rows={paginatedRoles}
+        rowsPerPage={rowsPerPage}
+        onPageChange={(event, newPage) => setPage(newPage)}
+        onRowsPerPageChange={(event) => setRowsPerPage(parseInt(event.target.value, 10))}
+      />
+      <RoleAdd open={openAddModal} setOpen={setOpenAddModal} addRole={addRole} />
+    </Stack>
+  );
+}
+
+function applyPagination(rows, page, rowsPerPage) {
+  return rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
+}

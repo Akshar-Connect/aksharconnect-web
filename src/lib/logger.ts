@@ -63,8 +63,6 @@ export class Logger {
   }
 }
 
-// This can be extended to create context specific logger (Server Action, Router Handler, etc.)
-// to add context information (IP, User-Agent, timestamp, etc.)
 
 export function createLogger({ prefix, level }: LoggerOptions = {}): Logger {
   return new Logger({ prefix, level });

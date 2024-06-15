@@ -15,15 +15,14 @@ import {
   TableHead,
   TablePagination,
   TableRow,
-  Typography,
 } from "@mui/material";
-import { Scrollbar } from "./../../scrollbar";
+import { Scrollbar } from "../../scrollbar";
 import DeleteIcon from "@mui/icons-material/Delete";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import EditIcon from "@mui/icons-material/Edit";
-import { RoleView } from '@/components/dashboard/role/roleView';
-import { RoleEdit } from '@/components/dashboard/role/roleEdit';
-import { useUserStore } from "@/store/useStore";
+import { RoleView } from '@/components/dashboard/role/RoleView';
+import { RoleEdit } from '@/components/dashboard/role/RoleEdit';
+import { useUserStore } from "@/store/UseStore";
 import SearchIcon from '@mui/icons-material/Search';
 import _ from 'lodash';
 

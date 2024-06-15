@@ -10,9 +10,9 @@ import { Plus as PlusIcon } from '@phosphor-icons/react/dist/ssr/Plus';
 import { Upload as UploadIcon } from '@phosphor-icons/react/dist/ssr/Upload';
 
 import { CustomersFilters } from '@/components/dashboard/customer/customers-filters';
-import { YuvakAdd } from '@/components/dashboard/yuvak/yuvakAdd';
-import { YuvakTable } from '@/components/dashboard/yuvak/yuvakTable';
-import { useUserStore } from "@/store/useStore";
+import { YuvakAdd } from '@/components/dashboard/yuvak/YuvakAdd';
+import { YuvakTable } from '@/components/dashboard/yuvak/YuvakTable';
+import { useUserStore } from "@/store/UseStore";
 
 export default function Page() {
   const [openAddModal, setOpenAddModal] = useState(false);
@@ -29,8 +29,7 @@ export default function Page() {
     state.setRoles,
   ]);
 
-  // console.log("userDetails at render - yuvak:", userDetails);
-  // console.log("roles at render - role:", roles);
+
 
   const handleUserDetailsUpdate = (newDetails) => {
     setUserDetails(newDetails);
@@ -45,9 +44,7 @@ export default function Page() {
   };
 
   useEffect(() => {
-    // For demonstration, let's assume we set some initial user details if they are null
     if (userDetails === null) {
-      // console.log("Setting initial user details");
       handleUserDetailsUpdate({ name: 'John Doe', email: 'john.doe@example.com' });
     }
   }, [userDetails]);

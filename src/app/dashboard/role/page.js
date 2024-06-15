@@ -9,10 +9,9 @@ import { Download as DownloadIcon } from '@phosphor-icons/react/dist/ssr/Downloa
 import { Plus as PlusIcon } from '@phosphor-icons/react/dist/ssr/Plus';
 import { Upload as UploadIcon } from '@phosphor-icons/react/dist/ssr/Upload';
 
-import { CustomersFilters } from '@/components/dashboard/customer/customers-filters';
-import { RoleAdd } from '@/components/dashboard/role/roleAdd';
-import { RoleTable } from '@/components/dashboard/role/roleTable';
-import { useUserStore } from "@/store/useStore";
+import { RoleAdd } from '@/components/dashboard/role/RoleAdd';
+import { RoleTable } from '@/components/dashboard/role/RoleTable';
+import { useUserStore } from "@/store/UseStore";
 
 export default function Page() {
   const [openAddModal, setOpenAddModal] = useState(false);
@@ -29,8 +28,6 @@ export default function Page() {
     state.setRoles,
   ]);
 
-  // console.log("userDetails at render:", userDetails);
-  // console.log("roles at render:", roles);
 
   const handleUserDetailsUpdate = (newDetails) => {
     setUserDetails(newDetails);
@@ -45,9 +42,7 @@ export default function Page() {
   };
 
   useEffect(() => {
-    // For demonstration, let's assume we set some initial user details if they are null
     if (userDetails === null) {
-      // console.log("Setting initial user details");
       handleUserDetailsUpdate({ name: 'John Doe', email: 'john.doe@example.com' });
     }
   }, [userDetails]);
@@ -78,7 +73,7 @@ export default function Page() {
           </Button>
         </div>
       </Stack>
-      {/* <CustomersFilters /> */}
+     
       <RoleTable
         count={roles.length}
         page={page}

@@ -53,7 +53,7 @@ export const RoleAdd = (props) => {
       reset();
       setOpen(false);
     } catch (e) {
-      console.log(e);
+      throw new Error(e);
     }
   }
 
@@ -97,7 +97,6 @@ export const RoleAdd = (props) => {
           <Grid container marginTop={2} spacing={3}>
             <Grid item md={3} xs={6}>
               <TextField
-                autoFocus
                 id="name"
                 name="name"
                 label="Sabha Name"

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import {
   Autocomplete,
   Box,
@@ -17,10 +17,6 @@ import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 
 export const RoleEdit = ({ open, setOpen, role }) => {
   if (!role) return null;
-
-  const handleClose = () => {
-    setOpen(false);
-  };
 
   return (
     <Dialog open={open} onClose={() => setOpen(false)} fullScreen>
@@ -59,7 +55,6 @@ export const RoleEdit = ({ open, setOpen, role }) => {
           <Grid container marginTop={2} spacing={3}>
             <Grid item md={3} xs={6}>
               <TextField
-                autoFocus
                 id="name"
                 name="name"
                 label="Sabha Name"

@@ -5,21 +5,18 @@ import {
   Box,
   Card,
   IconButton,
-  InputAdornment,
-  OutlinedInput,
   Table,
   TableBody,
   TableCell,
   TableHead,
   TablePagination,
   TableRow,
-  Typography,
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import EditIcon from "@mui/icons-material/Edit";
-import { RoleView } from '@/components/dashboard/role/roleView';
-import { useUserStore } from "@/store/useStore";
+import { RoleView } from '@/components/dashboard/role/RoleView';
+import { useUserStore } from "@/store/UseStore";
 
 export const YuvakTable = (props) => {
   const {
@@ -31,7 +28,6 @@ export const YuvakTable = (props) => {
     onRowsPerPageChange,
   } = props;
 
-  // console.log("Rows: ", rows); // Debugging: log the rows to verify the data
 
   const [openViewModal, setOpenViewModal] = React.useState(false);
   const [selectedRole, setSelectedRole] = React.useState(null);
@@ -106,7 +102,3 @@ export const YuvakTable = (props) => {
     </>
   );
 };
-
-function applyPagination(rows, page, rowsPerPage) {
-  return rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
-}

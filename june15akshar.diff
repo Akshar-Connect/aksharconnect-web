@@ -1,0 +1,469 @@
+diff --git a/src/app/dashboard/role/page.js b/src/app/dashboard/role/page.js
+index 348b951..74d25ad 100644
+--- a/src/app/dashboard/role/page.js
++++ b/src/app/dashboard/role/page.js
+@@ -9,10 +9,9 @@ import { Download as DownloadIcon } from '@phosphor-icons/react/dist/ssr/Downloa
+ import { Plus as PlusIcon } from '@phosphor-icons/react/dist/ssr/Plus';
+ import { Upload as UploadIcon } from '@phosphor-icons/react/dist/ssr/Upload';
+ 
+-import { CustomersFilters } from '@/components/dashboard/customer/customers-filters';
+-import { RoleAdd } from '@/components/dashboard/role/roleAdd';
+-import { RoleTable } from '@/components/dashboard/role/roleTable';
+-import { useUserStore } from "@/store/useStore";
++import { RoleAdd } from '@/components/dashboard/role/RoleAdd';
++import { RoleTable } from '@/components/dashboard/role/RoleTable';
++import { useUserStore } from "@/store/UseStore";
+ 
+ export default function Page() {
+   const [openAddModal, setOpenAddModal] = useState(false);
+@@ -29,8 +28,6 @@ export default function Page() {
+     state.setRoles,
+   ]);
+ 
+-  // console.log("userDetails at render:", userDetails);
+-  // console.log("roles at render:", roles);
+ 
+   const handleUserDetailsUpdate = (newDetails) => {
+     setUserDetails(newDetails);
+@@ -45,9 +42,7 @@ export default function Page() {
+   };
+ 
+   useEffect(() => {
+-    // For demonstration, let's assume we set some initial user details if they are null
+     if (userDetails === null) {
+-      // console.log("Setting initial user details");
+       handleUserDetailsUpdate({ name: 'John Doe', email: 'john.doe@example.com' });
+     }
+   }, [userDetails]);
+@@ -78,7 +73,7 @@ export default function Page() {
+           </Button>
+         </div>
+       </Stack>
+-      {/* <CustomersFilters /> */}
++     
+       <RoleTable
+         count={roles.length}
+         page={page}
+diff --git a/src/app/dashboard/yuvak/page.js b/src/app/dashboard/yuvak/page.js
+index 9a7c21c..264676d 100644
+--- a/src/app/dashboard/yuvak/page.js
++++ b/src/app/dashboard/yuvak/page.js
+@@ -10,9 +10,9 @@ import { Plus as PlusIcon } from '@phosphor-icons/react/dist/ssr/Plus';
+ import { Upload as UploadIcon } from '@phosphor-icons/react/dist/ssr/Upload';
+ 
+ import { CustomersFilters } from '@/components/dashboard/customer/customers-filters';
+-import { YuvakAdd } from '@/components/dashboard/yuvak/yuvakAdd';
+-import { YuvakTable } from '@/components/dashboard/yuvak/yuvakTable';
+-import { useUserStore } from "@/store/useStore";
++import { YuvakAdd } from '@/components/dashboard/yuvak/YuvakAdd';
++import { YuvakTable } from '@/components/dashboard/yuvak/YuvakTable';
++import { useUserStore } from "@/store/UseStore";
+ 
+ export default function Page() {
+   const [openAddModal, setOpenAddModal] = useState(false);
+@@ -29,8 +29,7 @@ export default function Page() {
+     state.setRoles,
+   ]);
+ 
+-  // console.log("userDetails at render - yuvak:", userDetails);
+-  // console.log("roles at render - role:", roles);
++
+ 
+   const handleUserDetailsUpdate = (newDetails) => {
+     setUserDetails(newDetails);
+@@ -45,9 +44,7 @@ export default function Page() {
+   };
+ 
+   useEffect(() => {
+-    // For demonstration, let's assume we set some initial user details if they are null
+     if (userDetails === null) {
+-      // console.log("Setting initial user details");
+       handleUserDetailsUpdate({ name: 'John Doe', email: 'john.doe@example.com' });
+     }
+   }, [userDetails]);
+diff --git a/src/components/core/logo.tsx b/src/components/core/logo.tsx
+index 5eaab97..0e05505 100644
+--- a/src/components/core/logo.tsx
++++ b/src/components/core/logo.tsx
+@@ -49,7 +49,7 @@ export function DynamicLogo({
+   const color = colorScheme === 'dark' ? colorDark : colorLight;
+ 
+   return (
+-    <NoSsr fallback={<Box sx={{ height: `${height}px`, width: `${width}px` }} />}>
++    <NoSsr fallback={<Box />}>
+       <Logo color={color} height={height} width={width} {...props} />
+     </NoSsr>
+   );
+diff --git a/src/components/dashboard/layout/side-nav.tsx b/src/components/dashboard/layout/side-nav.tsx
+index 7e643c5..c18971a 100644
+--- a/src/components/dashboard/layout/side-nav.tsx
++++ b/src/components/dashboard/layout/side-nav.tsx
+@@ -4,11 +4,9 @@ import * as React from 'react';
+ import RouterLink from 'next/link';
+ import { usePathname } from 'next/navigation';
+ import Box from '@mui/material/Box';
+-import Button from '@mui/material/Button';
+ import Divider from '@mui/material/Divider';
+ import Stack from '@mui/material/Stack';
+ import Typography from '@mui/material/Typography';
+-import { ArrowSquareUpRight as ArrowSquareUpRightIcon } from '@phosphor-icons/react/dist/ssr/ArrowSquareUpRight';
+ import { CaretUpDown as CaretUpDownIcon } from '@phosphor-icons/react/dist/ssr/CaretUpDown';
+ 
+ import type { NavItemConfig } from '@/types/nav';
+diff --git a/src/components/dashboard/overview/sales.tsx b/src/components/dashboard/overview/sales.tsx
+index ca12ff7..de521da 100644
+--- a/src/components/dashboard/overview/sales.tsx
++++ b/src/components/dashboard/overview/sales.tsx
+@@ -72,7 +72,6 @@ function useChartOptions(): ApexOptions {
+     },
+     yaxis: {
+       labels: {
+-        formatter: (value) => (value > 0 ? `${value}K` : `${value}`),
+         offsetX: -10,
+         style: { colors: theme.palette.text.secondary },
+       },
+diff --git a/src/components/dashboard/role/roleAdd.js b/src/components/dashboard/role/RoleAdd.js
+similarity index 99%
+rename from src/components/dashboard/role/roleAdd.js
+rename to src/components/dashboard/role/RoleAdd.js
+index 9b4d4a0..e749ba3 100644
+--- a/src/components/dashboard/role/roleAdd.js
++++ b/src/components/dashboard/role/RoleAdd.js
+@@ -53,7 +53,7 @@ export const RoleAdd = (props) => {
+       reset();
+       setOpen(false);
+     } catch (e) {
+-      console.log(e);
++      throw new Error(e);
+     }
+   }
+ 
+@@ -97,7 +97,6 @@ export const RoleAdd = (props) => {
+           <Grid container marginTop={2} spacing={3}>
+             <Grid item md={3} xs={6}>
+               <TextField
+-                autoFocus
+                 id="name"
+                 name="name"
+                 label="Sabha Name"
+diff --git a/src/components/dashboard/role/roleEdit.js b/src/components/dashboard/role/RoleEdit.js
+similarity index 96%
+rename from src/components/dashboard/role/roleEdit.js
+rename to src/components/dashboard/role/RoleEdit.js
+index 7622895..e1d9f48 100644
+--- a/src/components/dashboard/role/roleEdit.js
++++ b/src/components/dashboard/role/RoleEdit.js
+@@ -1,4 +1,4 @@
+-import React, { useState } from "react";
++import React from "react";
+ import {
+   Autocomplete,
+   Box,
+@@ -18,10 +18,6 @@ import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
+ export const RoleEdit = ({ open, setOpen, role }) => {
+   if (!role) return null;
+ 
+-  const handleClose = () => {
+-    setOpen(false);
+-  };
+-
+   return (
+     <Dialog open={open} onClose={() => setOpen(false)} fullScreen>
+       <DialogTitle
+@@ -59,7 +55,6 @@ export const RoleEdit = ({ open, setOpen, role }) => {
+           <Grid container marginTop={2} spacing={3}>
+             <Grid item md={3} xs={6}>
+               <TextField
+-                autoFocus
+                 id="name"
+                 name="name"
+                 label="Sabha Name"
+diff --git a/src/components/dashboard/role/roleTable.js b/src/components/dashboard/role/RoleTable.js
+similarity index 95%
+rename from src/components/dashboard/role/roleTable.js
+rename to src/components/dashboard/role/RoleTable.js
+index 630fc55..e681759 100644
+--- a/src/components/dashboard/role/roleTable.js
++++ b/src/components/dashboard/role/RoleTable.js
+@@ -15,15 +15,14 @@ import {
+   TableHead,
+   TablePagination,
+   TableRow,
+-  Typography,
+ } from "@mui/material";
+-import { Scrollbar } from "./../../scrollbar";
++import { Scrollbar } from "../../scrollbar";
+ import DeleteIcon from "@mui/icons-material/Delete";
+ import VisibilityIcon from "@mui/icons-material/Visibility";
+ import EditIcon from "@mui/icons-material/Edit";
+-import { RoleView } from '@/components/dashboard/role/roleView';
+-import { RoleEdit } from '@/components/dashboard/role/roleEdit';
+-import { useUserStore } from "@/store/useStore";
++import { RoleView } from '@/components/dashboard/role/RoleView';
++import { RoleEdit } from '@/components/dashboard/role/RoleEdit';
++import { useUserStore } from "@/store/UseStore";
+ import SearchIcon from '@mui/icons-material/Search';
+ import _ from 'lodash';
+ 
+diff --git a/src/components/dashboard/role/roleView.js b/src/components/dashboard/role/RoleView.js
+similarity index 96%
+rename from src/components/dashboard/role/roleView.js
+rename to src/components/dashboard/role/RoleView.js
+index faca2ee..9b922c1 100644
+--- a/src/components/dashboard/role/roleView.js
++++ b/src/components/dashboard/role/RoleView.js
+@@ -1,4 +1,4 @@
+-import React, { useState } from "react";
++import React from "react";
+ import {
+   Autocomplete,
+   Box,
+@@ -18,9 +18,7 @@ import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
+ export const RoleView = ({ open, setOpen, role }) => {
+   if (!role) return null;
+ 
+-  const handleClose = () => {
+-    setOpen(false);
+-  };
++ 
+ 
+   return (
+     <Dialog open={open} onClose={() => setOpen(false)} fullScreen>
+@@ -60,7 +58,6 @@ export const RoleView = ({ open, setOpen, role }) => {
+             <Grid item md={3} xs={6}>
+               <TextField
+                 disabled
+-                autoFocus
+                 id="name"
+                 name="name"
+                 label="Sabha Name"
+diff --git a/src/components/dashboard/yuvak/yuvakAdd.js b/src/components/dashboard/yuvak/YuvakAdd.js
+similarity index 96%
+rename from src/components/dashboard/yuvak/yuvakAdd.js
+rename to src/components/dashboard/yuvak/YuvakAdd.js
+index 3a91e6c..17589eb 100644
+--- a/src/components/dashboard/yuvak/yuvakAdd.js
++++ b/src/components/dashboard/yuvak/YuvakAdd.js
+@@ -14,7 +14,7 @@ import {
+ import { TimePicker } from "@mui/x-date-pickers/TimePicker";
+ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+ import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
+-import { useUserStore } from "@/store/useStore";
++import { useUserStore } from "@/store/UseStore";
+ 
+ export const YuvakAdd = (props) => {
+   const { open, setOpen, role } = props;
+@@ -26,6 +26,7 @@ export const YuvakAdd = (props) => {
+   const [day, setDay] = useState("");
+   const [location, setLocation] = useState("");
+   const [sabhaType, setSabhaType] = useState("");
++  const [status, setStatus] = useState("");
+   
+   useEffect(() => {
+     if (role) {
+@@ -37,23 +38,22 @@ export const YuvakAdd = (props) => {
+     }
+   }, [role]);
+   
+-  console.log("rororororor", role);
+ 
+   function reset() {
+     setName("");
+     setDay("");
+     setLocation("");
+     setSabhaType("");
+-    setTime(null); // Reset to null
++    setTime(null); 
++    setStatus(""); // Reset to null
+   }
+ 
+-  async function _onSave() {
++  const   _onSave = async() => {
+     try {
+       if (!name || !time || !day || !location || !sabhaType) {
+         return;
+       }
+ 
+-      // Format the time to a readable string
+       const hours = time.getHours().toString().padStart(2, '0');
+       const minutes = time.getMinutes().toString().padStart(2, '0');
+       const formattedTime = `${hours}:${minutes}`;
+@@ -63,8 +63,8 @@ export const YuvakAdd = (props) => {
+       reset();
+       setOpen(false);
+     } catch (e) {
+-      console.log(e);
+-    }
++      throw new Error(e);
++      }
+   }
+ 
+   return (
+@@ -107,7 +107,6 @@ export const YuvakAdd = (props) => {
+           <Grid container marginTop={2} spacing={3}>
+             <Grid item md={3} xs={6}>
+               <TextField
+-                autoFocus
+                 id="name"
+                 name="name"
+                 label="Yuvak Name"
+diff --git a/src/components/dashboard/yuvak/yuvakEdit.js b/src/components/dashboard/yuvak/YuvakEdit.js
+similarity index 98%
+rename from src/components/dashboard/yuvak/yuvakEdit.js
+rename to src/components/dashboard/yuvak/YuvakEdit.js
+index 3732771..1e706c4 100644
+--- a/src/components/dashboard/yuvak/yuvakEdit.js
++++ b/src/components/dashboard/yuvak/YuvakEdit.js
+@@ -34,7 +34,8 @@ export const YuvakEdit = (props) => {
+       reset();
+       setOpen(false);
+     } catch (e) {
+-      console.log(e);
++      throw new Error(e);
++      
+     }
+   }
+ 
+@@ -70,7 +71,6 @@ export const YuvakEdit = (props) => {
+           <Grid container marginTop={2} spacing={3}>
+             <Grid item md={3} xs={6}>
+               <TextField
+-                autoFocus
+                 id="name"
+                 name="name"
+                 label="Name"
+diff --git a/src/components/dashboard/yuvak/yuvakTable.js b/src/components/dashboard/yuvak/YuvakTable.js
+similarity index 88%
+rename from src/components/dashboard/yuvak/yuvakTable.js
+rename to src/components/dashboard/yuvak/YuvakTable.js
+index 7facb92..26e077a 100644
+--- a/src/components/dashboard/yuvak/yuvakTable.js
++++ b/src/components/dashboard/yuvak/YuvakTable.js
+@@ -5,21 +5,18 @@ import {
+   Box,
+   Card,
+   IconButton,
+-  InputAdornment,
+-  OutlinedInput,
+   Table,
+   TableBody,
+   TableCell,
+   TableHead,
+   TablePagination,
+   TableRow,
+-  Typography,
+ } from "@mui/material";
+ import DeleteIcon from "@mui/icons-material/Delete";
+ import VisibilityIcon from "@mui/icons-material/Visibility";
+ import EditIcon from "@mui/icons-material/Edit";
+-import { RoleView } from '@/components/dashboard/role/roleView';
+-import { useUserStore } from "@/store/useStore";
++import { RoleView } from '@/components/dashboard/role/RoleView';
++import { useUserStore } from "@/store/UseStore";
+ 
+ export const YuvakTable = (props) => {
+   const {
+@@ -31,7 +28,6 @@ export const YuvakTable = (props) => {
+     onRowsPerPageChange,
+   } = props;
+ 
+-  // console.log("Rows: ", rows); // Debugging: log the rows to verify the data
+ 
+   const [openViewModal, setOpenViewModal] = React.useState(false);
+   const [selectedRole, setSelectedRole] = React.useState(null);
+@@ -105,8 +101,4 @@ export const YuvakTable = (props) => {
+       />
+     </>
+   );
+-};
+-
+-function applyPagination(rows, page, rowsPerPage) {
+-  return rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
+-}
++};
+\ No newline at end of file
+diff --git a/src/components/dashboard/yuvak/yuvakView.js b/src/components/dashboard/yuvak/YuvakView.js
+similarity index 96%
+rename from src/components/dashboard/yuvak/yuvakView.js
+rename to src/components/dashboard/yuvak/YuvakView.js
+index 1a2b137..25046b0 100644
+--- a/src/components/dashboard/yuvak/yuvakView.js
++++ b/src/components/dashboard/yuvak/YuvakView.js
+@@ -1,4 +1,4 @@
+-import React, { useState } from "react";
++import React from "react";
+ import {
+   Box,
+   Button,
+@@ -17,9 +17,7 @@ import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
+ export const YuvakView = ({ open, setOpen, role }) => {
+   if (!role) return null;
+ 
+-  const handleClose = () => {
+-    setOpen(false);
+-  };
++
+ 
+   return (
+     <Dialog open={open} onClose={() => setOpen(false)} fullScreen>
+@@ -59,7 +57,6 @@ export const YuvakView = ({ open, setOpen, role }) => {
+             <Grid item md={3} xs={6}>
+               <TextField
+                 disabled
+-                autoFocus
+                 id="name"
+                 name="name"
+                 label="Sabha Name"
+diff --git a/src/contexts/user-context.tsx b/src/contexts/user-context.tsx
+index a5a6143..0d2b251 100644
+--- a/src/contexts/user-context.tsx
++++ b/src/contexts/user-context.tsx
+@@ -44,7 +44,7 @@ export function UserProvider({ children }: UserProviderProps): React.JSX.Element
+   }, []);
+ 
+   React.useEffect(() => {
+-    checkSession().catch((err) => {
++    checkSession().catch((err: unknown) => {
+       logger.error(err);
+       // noop
+     });
+diff --git a/src/lib/logger.ts b/src/lib/logger.ts
+index e43cba0..74e6ff1 100644
+--- a/src/lib/logger.ts
++++ b/src/lib/logger.ts
+@@ -63,8 +63,6 @@ export class Logger {
+   }
+ }
+ 
+-// This can be extended to create context specific logger (Server Action, Router Handler, etc.)
+-// to add context information (IP, User-Agent, timestamp, etc.)
+ 
+ export function createLogger({ prefix, level }: LoggerOptions = {}): Logger {
+   return new Logger({ prefix, level });
+diff --git a/src/store/useStore.js b/src/store/UseStore.js
+similarity index 100%
+rename from src/store/useStore.js
+rename to src/store/UseStore.js
+diff --git a/yarn.lock b/yarn.lock
+index 0967709..d6c2b3e 100644
+--- a/yarn.lock
++++ b/yarn.lock
+@@ -1002,10 +1002,15 @@
+   dependencies:
+     glob "10.3.10"
+ 
+-"@next/swc-win32-x64-msvc@14.1.3":
++"@next/swc-linux-x64-gnu@14.1.3":
+   version "14.1.3"
+-  resolved "https://registry.npmjs.org/@next/swc-win32-x64-msvc/-/swc-win32-x64-msvc-14.1.3.tgz"
+-  integrity sha512-uC2DaDoWH7h1P/aJ4Fok3Xiw6P0Lo4ez7NbowW2VGNXw/Xv6tOuLUcxhBYZxsSUJtpeknCi8/fvnSpyCFp4Rcg==
++  resolved "https://registry.npmjs.org/@next/swc-linux-x64-gnu/-/swc-linux-x64-gnu-14.1.3.tgz"
++  integrity sha512-8uOgRlYEYiKo0L8YGeS+3TudHVDWDjPVDUcST+z+dUzgBbTEwSSIaSgF/vkcC1T/iwl4QX9iuUyUdQEl0Kxalg==
++
++"@next/swc-linux-x64-musl@14.1.3":
++  version "14.1.3"
++  resolved "https://registry.npmjs.org/@next/swc-linux-x64-musl/-/swc-linux-x64-musl-14.1.3.tgz"
++  integrity sha512-DX2zqz05ziElLoxskgHasaJBREC5Y9TJcbR2LYqu4r7naff25B4iXkfXWfcp69uD75/0URmmoSgT8JclJtrBoQ==
+ 
+ "@nicolo-ribaudo/eslint-scope-5-internals@5.1.1-v1":
+   version "5.1.1-v1"

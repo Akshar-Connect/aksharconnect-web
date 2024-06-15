@@ -23,6 +23,6 @@
       "@/*": ["./src/*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "src/components/dashboard/role/roleAdd.js", "src/components/dashboard/role/roleTable.js"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "src/components/dashboard/role/RoleAdd.js", "src/components/dashboard/role/RoleTable.js"],
   "exclude": ["node_modules"]
 }

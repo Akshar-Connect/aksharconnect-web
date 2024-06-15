@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import {
   Box,
   Button,
@@ -17,9 +17,7 @@ import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 export const YuvakView = ({ open, setOpen, role }) => {
   if (!role) return null;
 
-  const handleClose = () => {
-    setOpen(false);
-  };
+
 
   return (
     <Dialog open={open} onClose={() => setOpen(false)} fullScreen>
@@ -59,7 +57,6 @@ export const YuvakView = ({ open, setOpen, role }) => {
             <Grid item md={3} xs={6}>
               <TextField
                 disabled
-                autoFocus
                 id="name"
                 name="name"
                 label="Sabha Name"

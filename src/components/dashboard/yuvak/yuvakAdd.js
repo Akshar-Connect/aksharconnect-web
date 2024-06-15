@@ -14,7 +14,7 @@ import {
 import { TimePicker } from "@mui/x-date-pickers/TimePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
-import { useUserStore } from "@/store/useStore";
+import { useUserStore } from "@/store/UseStore";
 
 export const YuvakAdd = (props) => {
   const { open, setOpen, role } = props;
@@ -26,6 +26,7 @@ export const YuvakAdd = (props) => {
   const [day, setDay] = useState("");
   const [location, setLocation] = useState("");
   const [sabhaType, setSabhaType] = useState("");
+  const [status, setStatus] = useState("");
   
   useEffect(() => {
     if (role) {
@@ -37,23 +38,22 @@ export const YuvakAdd = (props) => {
     }
   }, [role]);
   
-  console.log("rororororor", role);
 
   function reset() {
     setName("");
     setDay("");
     setLocation("");
     setSabhaType("");
-    setTime(null); // Reset to null
+    setTime(null); 
+    setStatus(""); // Reset to null
   }
 
-  async function _onSave() {
+  const   _onSave = async() => {
     try {
       if (!name || !time || !day || !location || !sabhaType) {
         return;
       }
 
-      // Format the time to a readable string
       const hours = time.getHours().toString().padStart(2, '0');
       const minutes = time.getMinutes().toString().padStart(2, '0');
       const formattedTime = `${hours}:${minutes}`;
@@ -63,8 +63,8 @@ export const YuvakAdd = (props) => {
       reset();
       setOpen(false);
     } catch (e) {
-      console.log(e);
-    }
+      throw new Error(e);
+      }
   }
 
   return (
@@ -107,7 +107,6 @@ export const YuvakAdd = (props) => {
           <Grid container marginTop={2} spacing={3}>
             <Grid item md={3} xs={6}>
               <TextField
-                autoFocus
                 id="name"
                 name="name"
                 label="Yuvak Name"

@@ -43,7 +43,7 @@ export const RoleAdd = (props) => {
         return;
       }
 
-      // Format the time to a readable string
+      // //Format the time to a readable string
       const hours = time.getHours().toString().padStart(2, '0');
       const minutes = time.getMinutes().toString().padStart(2, '0');
       const formattedTime = `${hours}:${minutes}`;

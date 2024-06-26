@@ -14,7 +14,7 @@ import { TimePicker } from "@mui/x-date-pickers/TimePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 
-export const YuvakView = ({ open, setOpen, role }) => {
+export function YuvakView({ open, setOpen, role }) {
   if (!role) return null;
 
 
@@ -116,4 +116,4 @@ export const YuvakView = ({ open, setOpen, role }) => {
       </DialogContent>
     </Dialog>
   );
-};
+}

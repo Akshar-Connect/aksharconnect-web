@@ -18,7 +18,8 @@ import EditIcon from "@mui/icons-material/Edit";
 import { RoleView } from '@/components/dashboard/role/RoleView';
 import { useUserStore } from "@/store/UseStore";
 
-export const YuvakTable = (props) => {
+
+export function YuvakTable(props) {
   const {
     count,
     page,
@@ -32,6 +33,18 @@ export const YuvakTable = (props) => {
   const [openViewModal, setOpenViewModal] = React.useState(false);
   const [selectedRole, setSelectedRole] = React.useState(null);
 
+
+
+
+const visibleRows = React.useMemo(
+  () =>
+   Object.values(rows).slice(
+      page * rowsPerPage,
+      page * rowsPerPage + rowsPerPage,
+    ),
+  [ page, rowsPerPage, rows],
+);
+
   const handleViewRole = (role) => {
     setSelectedRole(role);
     setOpenViewModal(true);
@@ -42,7 +55,7 @@ export const YuvakTable = (props) => {
   const handleDeleteRole = (roleId) => {
     deleteRole(roleId);
   };
-
+  
   return (
     <>
       <Card>
@@ -50,32 +63,34 @@ export const YuvakTable = (props) => {
           <Table>
             <TableHead>
               <TableRow>
-                <TableCell>Sr No.</TableCell>
-                <TableCell>Name</TableCell>
-                <TableCell>Day</TableCell>
-                <TableCell>Location</TableCell>
-                <TableCell>Sabha Type</TableCell>
-                <TableCell>Time</TableCell>
+                <TableCell>Sr. No</TableCell>
+                <TableCell>First Name</TableCell>
+                <TableCell>Middle Name</TableCell>
+                <TableCell>Last Name</TableCell>
+                <TableCell>UserAuth ID</TableCell>
+                <TableCell>Akshar ID</TableCell>
+                <TableCell>Sabha Name</TableCell>
                 <TableCell>Actions</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {rows.map((role, index) => (
-                <TableRow key={role.id}>
+              {visibleRows.map((yuvak, index) => (
+                <TableRow key={yuvak.userAuth.id}>
                   <TableCell>{index + 1}</TableCell>
-                  <TableCell>{role.name}</TableCell>
-                  <TableCell>{role.day}</TableCell>
-                  <TableCell>{role.location}</TableCell>
-                  <TableCell>{role.sabhaType}</TableCell>
-                  <TableCell>{role.time}</TableCell>
+                  <TableCell>{yuvak.firstName}</TableCell>
+                  <TableCell>{yuvak.middleName}</TableCell>
+                  <TableCell>{yuvak.lastName}</TableCell>
+                  <TableCell>{yuvak.userAuth.id}</TableCell>
+                  <TableCell>{yuvak.userAuth.aksharId}</TableCell>
+                  <TableCell>{yuvak.userAuth.sabha.name}</TableCell>
                   <TableCell>
-                    <IconButton onClick={() => handleViewRole(role)}>
+                    <IconButton onClick={() => handleViewRole(yuvak.userAuth.id)}>
                       <VisibilityIcon />
                     </IconButton>
                     <IconButton>
                       <EditIcon />
                     </IconButton>
-                    <IconButton onClick={() => handleDeleteRole(role.id)}>
+                    <IconButton onClick={() => handleDeleteRole(yuvak.userAuth.id)}>
                       <DeleteIcon />
                     </IconButton>
                   </TableCell>
@@ -85,13 +100,13 @@ export const YuvakTable = (props) => {
           </Table>
         </Box>
         <TablePagination
+          rowsPerPageOptions={[25,50,75,100]}
           component="div"
           count={count}
+          rowsPerPage={rowsPerPage}
+          page={page}
           onPageChange={onPageChange}
           onRowsPerPageChange={onRowsPerPageChange}
-          page={page}
-          rowsPerPage={rowsPerPage}
-          rowsPerPageOptions={[5, 10, 25]}
         />
       </Card>
       <RoleView
@@ -101,4 +116,4 @@ export const YuvakTable = (props) => {
       />
     </>
   );
-};
+}

@@ -9,15 +9,42 @@ import { Download as DownloadIcon } from '@phosphor-icons/react/dist/ssr/Downloa
 import { Plus as PlusIcon } from '@phosphor-icons/react/dist/ssr/Plus';
 import { Upload as UploadIcon } from '@phosphor-icons/react/dist/ssr/Upload';
 
-import { CustomersFilters } from '@/components/dashboard/customer/customers-filters';
+import { MagnifyingGlass as MagnifyingGlassIcon } from '@phosphor-icons/react/dist/ssr/MagnifyingGlass';
 import { YuvakAdd } from '@/components/dashboard/yuvak/YuvakAdd';
 import { YuvakTable } from '@/components/dashboard/yuvak/YuvakTable';
 import { useUserStore } from "@/store/UseStore";
+import { Card, InputAdornment, OutlinedInput } from '@mui/material';
+import { fetchApi } from '@/utils/FetchApi';
 
 export default function Page() {
   const [openAddModal, setOpenAddModal] = useState(false);
   const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [rowsPerPage, setRowsPerPage] = useState(25);
+  const [searchTerm, setSearchTerm] = React.useState("");
+  const [yuvakData, setYuvakData] = React.useState([]);
+
+
+React.useEffect(()=>{
+  const requestSearch = async() => {
+    try {
+      let data;
+      const profResp = await fetchApi({
+        method:"get",
+        url: "user-profile/find-by-name-like",
+        params:{name:searchTerm}
+      });
+
+      data =profResp.data;
+      setYuvakData(data)
+
+    } catch (error) {
+      throw new Error(
+        `Error occurs while fetching Yuvak Data, ${error}`
+      );
+    }
+  };
+  requestSearch()
+},[searchTerm])
 
   const [userDetails, setUserDetails] = useUserStore((state) => [
     state.userDetailsStore,
@@ -49,7 +76,15 @@ export default function Page() {
     }
   }, [userDetails]);
 
-  const paginatedRoles = applyPagination(roles, page, rowsPerPage);
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
+
 
   return (
     <Stack spacing={3}>
@@ -75,20 +110,33 @@ export default function Page() {
           </Button>
         </div>
       </Stack>
-      <CustomersFilters />
+      <Card sx={{ p: 2 }}>
+      <OutlinedInput
+        defaultValue=""
+        fullWidth
+        onChange={(e) => {
+          setSearchTerm(e.target.value);  }
+        }
+        placeholder="Search Yuvak"
+        startAdornment={
+          <InputAdornment position="start">
+            <MagnifyingGlassIcon fontSize="var(--icon-fontSize-md)" />
+          </InputAdornment>
+        }
+        sx={{ maxWidth: '500px' }}
+      />
+    </Card>
       <YuvakTable
-        count={roles.length}
+        count={Number(Object.values(yuvakData).length)}
         page={page}
-        rows={paginatedRoles}
+        rows={yuvakData}
         rowsPerPage={rowsPerPage}
-        onPageChange={(event, newPage) => setPage(newPage)}
-        onRowsPerPageChange={(event) => setRowsPerPage(parseInt(event.target.value, 10))}
+        onPageChange={handleChangePage}
+        onRowsPerPageChange={handleChangeRowsPerPage}
+        searchTerm={searchTerm}
       />
       <YuvakAdd open={openAddModal} setOpen={setOpenAddModal} addRole={addRole} />
     </Stack>
   );
 }
 
-function applyPagination(rows, page, rowsPerPage) {
-  return rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
-}

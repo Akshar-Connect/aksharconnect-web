@@ -1,0 +1,346 @@
+diff --git a/package.json b/package.json
+index 5f2370c..617cbd6 100644
+--- a/package.json
++++ b/package.json
+@@ -32,6 +32,7 @@
+     "@mui/x-date-pickers": "6.19.6",
+     "@phosphor-icons/react": "2.0.15",
+     "apexcharts": "3.46.0",
++    "axios": "^1.7.2",
+     "date-fns": "^2.29.3",
+     "dayjs": "1.11.10",
+     "lodash": "^4.17.21",
+@@ -41,6 +42,7 @@
+     "react-apexcharts": "1.4.1",
+     "react-dom": "18.2.0",
+     "react-hook-form": "7.51.0",
++    "react-toastify": "^10.0.5",
+     "simplebar": "^6.2.6",
+     "simplebar-react": "^3.2.5",
+     "zod": "3.22.4",
+diff --git a/src/app/dashboard/yuvak/page.js b/src/app/dashboard/yuvak/page.js
+index 264676d..6f1596d 100644
+--- a/src/app/dashboard/yuvak/page.js
++++ b/src/app/dashboard/yuvak/page.js
+@@ -9,15 +9,17 @@ import { Download as DownloadIcon } from '@phosphor-icons/react/dist/ssr/Downloa
+ import { Plus as PlusIcon } from '@phosphor-icons/react/dist/ssr/Plus';
+ import { Upload as UploadIcon } from '@phosphor-icons/react/dist/ssr/Upload';
+ 
+-import { CustomersFilters } from '@/components/dashboard/customer/customers-filters';
++import { MagnifyingGlass as MagnifyingGlassIcon } from '@phosphor-icons/react/dist/ssr/MagnifyingGlass';
+ import { YuvakAdd } from '@/components/dashboard/yuvak/YuvakAdd';
+ import { YuvakTable } from '@/components/dashboard/yuvak/YuvakTable';
+ import { useUserStore } from "@/store/UseStore";
++import { Card, InputAdornment, OutlinedInput } from '@mui/material';
+ 
+ export default function Page() {
+   const [openAddModal, setOpenAddModal] = useState(false);
+   const [page, setPage] = useState(0);
+   const [rowsPerPage, setRowsPerPage] = useState(5);
++  const [searchTerm, setSearchTerm] = React.useState("");
+ 
+   const [userDetails, setUserDetails] = useUserStore((state) => [
+     state.userDetailsStore,
+@@ -75,7 +77,22 @@ export default function Page() {
+           </Button>
+         </div>
+       </Stack>
+-      <CustomersFilters />
++      <Card sx={{ p: 2 }}>
++      <OutlinedInput
++        defaultValue=""
++        fullWidth
++        onChange={(e) => {
++          setSearchTerm(e.target.value);  }
++        }
++        placeholder="Search Yuvak"
++        startAdornment={
++          <InputAdornment position="start">
++            <MagnifyingGlassIcon fontSize="var(--icon-fontSize-md)" />
++          </InputAdornment>
++        }
++        sx={{ maxWidth: '500px' }}
++      />
++    </Card>
+       <YuvakTable
+         count={roles.length}
+         page={page}
+@@ -83,6 +100,7 @@ export default function Page() {
+         rowsPerPage={rowsPerPage}
+         onPageChange={(event, newPage) => setPage(newPage)}
+         onRowsPerPageChange={(event) => setRowsPerPage(parseInt(event.target.value, 10))}
++        searchTerm={searchTerm}
+       />
+       <YuvakAdd open={openAddModal} setOpen={setOpenAddModal} addRole={addRole} />
+     </Stack>
+diff --git a/src/components/dashboard/role/RoleTable.js b/src/components/dashboard/role/RoleTable.js
+index e681759..8202d6e 100644
+--- a/src/components/dashboard/role/RoleTable.js
++++ b/src/components/dashboard/role/RoleTable.js
+@@ -25,8 +25,9 @@ import { RoleEdit } from '@/components/dashboard/role/RoleEdit';
+ import { useUserStore } from "@/store/UseStore";
+ import SearchIcon from '@mui/icons-material/Search';
+ import _ from 'lodash';
++import {fetchApi} from "../../../utils/FetchApi"
+ 
+-export const RoleTable = (props) => {
++export function RoleTable(props) {
+   const {
+     count,
+     page,
+@@ -56,13 +57,30 @@ export const RoleTable = (props) => {
+   const handleDeleteRole = (roleId) => {
+     deleteRole(roleId);
+   };
+-
+   let data = rows;
++  // const requestSearch = async(e) => {
++   
++  //   let searchedVal =e.target.value
++  //   try {
++  //     const profResp = await fetchApi({
++  //       url: "user-profile/find-by-name-like",
++  //       params:{name:searchedVal}
++  //     });
++
++  //     data =profResp.data;
++  //   } catch (error) {
++  //     throw new Error(
++  //       `Error occurred while fetching profile or CSRF headers! ${error}`
++  //     );
++  //   }
++  // };
++
+ 
+   if (searchTerm !== "") {
+-    data = _.filter(data, (i) => {
+-      return i.name && i.name.toLowerCase().includes(searchTerm.toLowerCase());
+-    });
++    // requestSearch(searchTerm);
++    // data = _.filter(data, (i) => {
++    //   return i.name && i.name.toLowerCase().includes(searchTerm.toLowerCase());
++    // });
+   }
+ 
+   data = applyPagination(data, page, rowsPerPage);
+@@ -74,7 +92,11 @@ export const RoleTable = (props) => {
+           defaultValue=""
+           fullWidth
+           placeholder="Search Role"
+-          onChange={(e) => setSearchTerm(e.target.value)}
++          onChange={(e) => {
++            setSearchTerm(e);  
++          // requestSearch(e)
++          }
++        }
+           startAdornment={
+             <InputAdornment position="start">
+               <SvgIcon color="action" fontSize="small">
+@@ -159,7 +181,7 @@ export const RoleTable = (props) => {
+       />
+     </>
+   );
+-};
++}
+ 
+ function applyPagination(rows, page, rowsPerPage) {
+   return rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
+diff --git a/src/components/dashboard/role/RoleView.js b/src/components/dashboard/role/RoleView.js
+index 9b922c1..34d41e0 100644
+--- a/src/components/dashboard/role/RoleView.js
++++ b/src/components/dashboard/role/RoleView.js
+@@ -15,7 +15,7 @@ import { TimePicker } from "@mui/x-date-pickers/TimePicker";
+ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+ import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
+ 
+-export const RoleView = ({ open, setOpen, role }) => {
++export function RoleView({ open, setOpen, role }) {
+   if (!role) return null;
+ 
+  
+@@ -136,4 +136,4 @@ export const RoleView = ({ open, setOpen, role }) => {
+       </DialogContent>
+     </Dialog>
+   );
+-};
++}
+diff --git a/src/components/dashboard/yuvak/YuvakTable.js b/src/components/dashboard/yuvak/YuvakTable.js
+index 26e077a..29bd199 100644
+--- a/src/components/dashboard/yuvak/YuvakTable.js
++++ b/src/components/dashboard/yuvak/YuvakTable.js
+@@ -17,20 +17,57 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
+ import EditIcon from "@mui/icons-material/Edit";
+ import { RoleView } from '@/components/dashboard/role/RoleView';
+ import { useUserStore } from "@/store/UseStore";
++import { fetchApi } from '@/utils/FetchApi';
+ 
+-export const YuvakTable = (props) => {
++export function YuvakTable(props) {
+   const {
+-    count,
+-    page,
+-    rows,
+-    rowsPerPage,
+-    onPageChange,
+-    onRowsPerPageChange,
++    // count,
++    // // page,
++    // rows,
++    // // rowsPerPage,
++    // onPageChange,
++    // onRowsPerPageChange,
++    searchTerm
+   } = props;
+ 
+ 
+   const [openViewModal, setOpenViewModal] = React.useState(false);
+   const [selectedRole, setSelectedRole] = React.useState(null);
++  const [yuvakData, setYuvakData] = React.useState([]);
++  const [page, setPage] = React.useState(0);
++  const [rowsPerPage, setRowsPerPage] = React.useState(25);
++
++
++React.useEffect(()=>{
++  const requestSearch = async() => {
++    try {
++      let data;
++      const profResp = await fetchApi({
++        url: "user-profile/find-by-name-like",
++        params:{name:searchTerm}
++      });
++
++      data =profResp.data;
++      setYuvakData(data)
++
++    } catch (error) {
++      throw new Error(
++        `Error occurred while fetching profile or CSRF headers! ${error}`
++      );
++    }
++  };
++  requestSearch()
++},[searchTerm])
++
++
++const visibleRows = React.useMemo(
++  () =>
++   Object.values(yuvakData).slice(
++      page * rowsPerPage,
++      page * rowsPerPage + rowsPerPage,
++    ),
++  [ page, rowsPerPage, yuvakData],
++);
+ 
+   const handleViewRole = (role) => {
+     setSelectedRole(role);
+@@ -42,7 +79,14 @@ export const YuvakTable = (props) => {
+   const handleDeleteRole = (roleId) => {
+     deleteRole(roleId);
+   };
++  const handleChangePage = (event, newPage) => {
++    setPage(newPage);
++  };
+ 
++  const handleChangeRowsPerPage = (event) => {
++    setRowsPerPage(parseInt(event.target.value, 10));
++    setPage(0);
++  };
+   return (
+     <>
+       <Card>
+@@ -50,32 +94,34 @@ export const YuvakTable = (props) => {
+           <Table>
+             <TableHead>
+               <TableRow>
+-                <TableCell>Sr No.</TableCell>
+-                <TableCell>Name</TableCell>
+-                <TableCell>Day</TableCell>
+-                <TableCell>Location</TableCell>
+-                <TableCell>Sabha Type</TableCell>
+-                <TableCell>Time</TableCell>
++                <TableCell>Sr. No</TableCell>
++                <TableCell>First Name</TableCell>
++                <TableCell>Middle Name</TableCell>
++                <TableCell>Last Name</TableCell>
++                <TableCell>UserAuth ID</TableCell>
++                <TableCell>Akshar ID</TableCell>
++                <TableCell>Sabha Name</TableCell>
+                 <TableCell>Actions</TableCell>
+               </TableRow>
+             </TableHead>
+             <TableBody>
+-              {rows.map((role, index) => (
+-                <TableRow key={role.id}>
++              {visibleRows.map((yuvak, index) => (
++                <TableRow key={yuvak.userAuth.id}>
+                   <TableCell>{index + 1}</TableCell>
+-                  <TableCell>{role.name}</TableCell>
+-                  <TableCell>{role.day}</TableCell>
+-                  <TableCell>{role.location}</TableCell>
+-                  <TableCell>{role.sabhaType}</TableCell>
+-                  <TableCell>{role.time}</TableCell>
++                  <TableCell>{yuvak.firstName}</TableCell>
++                  <TableCell>{yuvak.middleName}</TableCell>
++                  <TableCell>{yuvak.lastName}</TableCell>
++                  <TableCell>{yuvak.userAuth.id}</TableCell>
++                  <TableCell>{yuvak.userAuth.aksharId}</TableCell>
++                  <TableCell>{yuvak.userAuth.sabha.name}</TableCell>
+                   <TableCell>
+-                    <IconButton onClick={() => handleViewRole(role)}>
++                    <IconButton onClick={() => handleViewRole(yuvak.userAuth.id)}>
+                       <VisibilityIcon />
+                     </IconButton>
+                     <IconButton>
+                       <EditIcon />
+                     </IconButton>
+-                    <IconButton onClick={() => handleDeleteRole(role.id)}>
++                    <IconButton onClick={() => handleDeleteRole(yuvak.userAuth.id)}>
+                       <DeleteIcon />
+                     </IconButton>
+                   </TableCell>
+@@ -85,13 +131,13 @@ export const YuvakTable = (props) => {
+           </Table>
+         </Box>
+         <TablePagination
++          rowsPerPageOptions={[25,50,75,100]}
+           component="div"
+-          count={count}
+-          onPageChange={onPageChange}
+-          onRowsPerPageChange={onRowsPerPageChange}
+-          page={page}
++          count={Number(Object.values(yuvakData).length)}
+           rowsPerPage={rowsPerPage}
+-          rowsPerPageOptions={[5, 10, 25]}
++          page={page}
++          onPageChange={handleChangePage}
++          onRowsPerPageChange={handleChangeRowsPerPage}
+         />
+       </Card>
+       <RoleView
+@@ -101,4 +147,4 @@ export const YuvakTable = (props) => {
+       />
+     </>
+   );
+-};
+\ No newline at end of file
++}
+\ No newline at end of file
+diff --git a/src/components/dashboard/yuvak/YuvakView.js b/src/components/dashboard/yuvak/YuvakView.js
+index 25046b0..c573aaf 100644
+--- a/src/components/dashboard/yuvak/YuvakView.js
++++ b/src/components/dashboard/yuvak/YuvakView.js
+@@ -14,7 +14,7 @@ import { TimePicker } from "@mui/x-date-pickers/TimePicker";
+ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+ import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
+ 
+-export const YuvakView = ({ open, setOpen, role }) => {
++export function YuvakView({ open, setOpen, role }) {
+   if (!role) return null;
+ 
+ 
+@@ -116,4 +116,4 @@ export const YuvakView = ({ open, setOpen, role }) => {
+       </DialogContent>
+     </Dialog>
+   );
+-};
++}

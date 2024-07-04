@@ -24,8 +24,8 @@ import { useUser } from '@/hooks/use-user';
 import { InputAdornment } from '@mui/material';
 
 const schema = zod.object({
-  phoneNumber: zod.number().min(1, { message: 'Phone No is required' }),
-  mpin: zod.number().min(1, { message: 'mpin is required' }),
+  phoneNumber: zod.string().min(1, { message: 'Phone No is required' }),
+  mpin: zod.string().min(1, { message: 'mpin is required' }),
 });
 
 type Values = zod.infer<typeof schema>;

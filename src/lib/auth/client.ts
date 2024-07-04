@@ -32,8 +32,8 @@ export interface SignInWithOAuthParams {
 }
 
 export interface SignInWithPasswordParams {
-  phoneNumber: number;
-  mpin: number;
+  phoneNumber: string;
+  mpin: string;
 }
 
 export interface ResetPasswordParams {
@@ -60,8 +60,8 @@ class AuthClient {
     return { error: 'Social authentication not implemented' };
   }
 
-  async signInWithPassword(params: {phoneNumber:number, mpin:number}): Promise<{ error?: unknown }> {
-    const { phoneNumber, mpin } : {phoneNumber:number, mpin : number} = params;
+  async signInWithPassword(params: {phoneNumber:string, mpin:string}): Promise<{ error?: unknown }> {
+    const { phoneNumber, mpin } : {phoneNumber:string, mpin : string} = params;
 
 try{  
   const profResp = await axiosInstance.post(

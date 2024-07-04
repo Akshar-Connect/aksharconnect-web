@@ -14,7 +14,7 @@ import { YuvakAdd } from '@/components/dashboard/yuvak/YuvakAdd';
 import { YuvakTable } from '@/components/dashboard/yuvak/YuvakTable';
 import { useUserStore } from "@/store/UseStore";
 import { Card, InputAdornment, OutlinedInput } from '@mui/material';
-import { fetchApi } from '@/utils/FetchApi';
+import axiosInstance, { fetchApi } from '@/utils/FetchApi';
 
 export default function Page() {
   const [openAddModal, setOpenAddModal] = useState(false);
@@ -28,11 +28,10 @@ React.useEffect(()=>{
   const requestSearch = async() => {
     try {
       let data;
-      const profResp = await fetchApi({
-        method:"get",
-        url: "user-profile/find-by-name-like",
-        params:{name:searchTerm}
-      });
+      const profResp = await axiosInstance.get(
+         "/user-profile/find-by-name-like",
+        {params:{name:searchTerm}}
+      );
 
       data =profResp.data;
       setYuvakData(data)

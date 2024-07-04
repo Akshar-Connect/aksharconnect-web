@@ -21,15 +21,16 @@ import { z as zod } from 'zod';
 import { paths } from '@/paths';
 import { authClient } from '@/lib/auth/client';
 import { useUser } from '@/hooks/use-user';
+import { InputAdornment } from '@mui/material';
 
 const schema = zod.object({
-  email: zod.string().min(1, { message: 'Email is required' }).email(),
-  password: zod.string().min(1, { message: 'Password is required' }),
+  phoneNumber: zod.string().min(1, { message: 'Phone No is required' }),
+  mpin: zod.string().min(1, { message: 'mpin is required' }),
 });
 
 type Values = zod.infer<typeof schema>;
 
-const defaultValues = { email: 'aym.dahisar@gmail.io', password: 'aym369' } satisfies Values;
+const defaultValues = { phoneNumber: '', mpin: '' } satisfies Values;
 
 export function SignInForm(): React.JSX.Element {
   const router = useRouter();
@@ -39,13 +40,13 @@ export function SignInForm(): React.JSX.Element {
   const [showPassword, setShowPassword] = React.useState<boolean>();
 
   const [isPending, setIsPending] = React.useState<boolean>(false);
-
+  31
   const {
     control,
     handleSubmit,
     setError,
     formState: { errors },
-  } = useForm<Values>({ defaultValues, resolver: zodResolver(schema) });
+  } = useForm<Values>({defaultValues,resolver: zodResolver(schema) });
 
   const onSubmit = React.useCallback(
     async (values: Values): Promise<void> => {
@@ -84,21 +85,23 @@ export function SignInForm(): React.JSX.Element {
         <Stack spacing={2}>
           <Controller
             control={control}
-            name="email"
+            name="phoneNumber"
             render={({ field }) => (
-              <FormControl error={Boolean(errors.email)}>
-                <InputLabel>Email address</InputLabel>
-                <OutlinedInput {...field} label="Email address" type="email" />
-                {errors.email ? <FormHelperText>{errors.email.message}</FormHelperText> : null}
+              <FormControl error={Boolean(errors.phoneNumber)}>
+                <InputLabel>Phone No</InputLabel>
+                <OutlinedInput {...field} label="Phone No" type="number"
+                 startAdornment={<InputAdornment position="start">+91</InputAdornment>}
+                placeholder="Enter phone number" />
+                 {errors.phoneNumber ? <FormHelperText>{errors.phoneNumber.message}</FormHelperText> : null} 
               </FormControl>
             )}
           />
           <Controller
             control={control}
-            name="password"
+            name="mpin"
             render={({ field }) => (
-              <FormControl error={Boolean(errors.password)}>
-                <InputLabel>Password</InputLabel>
+              <FormControl  error={Boolean(errors.mpin)}>
+                <InputLabel>MPIN</InputLabel>
                 <OutlinedInput
                   {...field}
                   endAdornment={
@@ -121,9 +124,9 @@ export function SignInForm(): React.JSX.Element {
                     )
                   }
                   label="Password"
-                  type={showPassword ? 'text' : 'password'}
+                  type={showPassword ? 'number' : 'password'}
                 />
-                {errors.password ? <FormHelperText>{errors.password.message}</FormHelperText> : null}
+                 {errors.mpin ? <FormHelperText>{errors.mpin.message}</FormHelperText> : null} 
               </FormControl>
             )}
           />
@@ -138,16 +141,6 @@ export function SignInForm(): React.JSX.Element {
           </Button>
         </Stack>
       </form>
-      <Alert color="warning">
-        Use{' '}
-        <Typography component="span" sx={{ fontWeight: 700 }} variant="inherit">
-          aym.dahisar@gmail.io
-        </Typography>{' '}
-        with password{' '}
-        <Typography component="span" sx={{ fontWeight: 700 }} variant="inherit">
-          aym369
-        </Typography>
-      </Alert>
     </Stack>
   );
 }

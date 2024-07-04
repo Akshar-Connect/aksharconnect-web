@@ -1,6 +1,8 @@
 'use client';
 
-import type { User } from '@/types/user';
+import type { User } from '@/types/user'
+import * as qs from 'qs'
+import axiosInstance, { fetchApi } from '@/utils/FetchApi';
 
 function generateToken(): string {
   const arr = new Uint8Array(12);
@@ -28,8 +30,8 @@ export interface SignInWithOAuthParams {
 }
 
 export interface SignInWithPasswordParams {
-  email: string;
-  password: string;
+  phoneNumber: number;
+  mpin: number;
 }
 
 export interface ResetPasswordParams {
@@ -51,18 +53,36 @@ class AuthClient {
     return { error: 'Social authentication not implemented' };
   }
 
-  async signInWithPassword(params: SignInWithPasswordParams): Promise<{ error?: string }> {
-    const { email, password } = params;
+  async signInWithPassword(params: {phoneNumber:number, mpin:number}): Promise<{ error?: unknown }> {
+    const { phoneNumber, mpin } = params;
 
-    // Make API request
+try{
+
+  
+  const profResp = await axiosInstance.post(
+     "/user-auth/phone/login-with-phone-no-mpin",
+    { phoneNumber: `+91${phoneNumber}` , mpin }
+  );
+
+ 
+  const access_token = profResp.data.access_token
+  const refresh_token = profResp.data.refresh_token
+  localStorage.setItem('access_token', access_token);
+  localStorage.setItem('refresh_token', refresh_token);
+}
+  catch(error){
+console.log("Error while login",error);
+if (error) {
+  return { error: 'Invalid credentials' };
+}
+  }// Make API request
 
     // We do not handle the API, so we'll check if the credentials match with the hardcoded ones.
-    if (email !== 'aym.dahisar@gmail.io' || password !== 'aym369') {
-      return { error: 'Invalid credentials' };
-    }
+    // if (email !== 'aym.dahisar@gmail.io' || password !== 'aym369') {
+    //   return { error: 'Invalid credentials' };
+    // }
 
-    const token = generateToken();
-    localStorage.setItem('custom-auth-token', token);
+   
 
     return {};
   }
@@ -79,7 +99,7 @@ class AuthClient {
     // Make API request
 
     // We do not handle the API, so just check if we have a token in localStorage.
-    const token = localStorage.getItem('custom-auth-token');
+    const token = localStorage.getItem('access_token');
 
     if (!token) {
       return { data: null };
@@ -89,7 +109,8 @@ class AuthClient {
   }
 
   async signOut(): Promise<{ error?: string }> {
-    localStorage.removeItem('custom-auth-token');
+    localStorage.removeItem('access_token');
+    localStorage.removeItem('refresh_token');
 
     return {};
   }

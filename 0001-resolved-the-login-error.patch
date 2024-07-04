@@ -1,0 +1,54 @@
+From ecd9eb8c5f9bcc42245f1c37c1bba6fa4950c3fe Mon Sep 17 00:00:00 2001
+From: Brijesh Bhalala <brijeshbhalala2324@gmail.com>
+Date: Thu, 4 Jul 2024 16:17:24 +0530
+Subject: [PATCH] resolved the login error
+
+---
+ src/components/auth/sign-in-form.tsx | 4 ++--
+ src/lib/auth/client.ts               | 8 ++++----
+ 2 files changed, 6 insertions(+), 6 deletions(-)
+
+diff --git a/src/components/auth/sign-in-form.tsx b/src/components/auth/sign-in-form.tsx
+index 76043d1..23d7843 100644
+--- a/src/components/auth/sign-in-form.tsx
++++ b/src/components/auth/sign-in-form.tsx
+@@ -24,8 +24,8 @@ import { useUser } from '@/hooks/use-user';
+ import { InputAdornment } from '@mui/material';
+ 
+ const schema = zod.object({
+-  phoneNumber: zod.number().min(1, { message: 'Phone No is required' }),
+-  mpin: zod.number().min(1, { message: 'mpin is required' }),
++  phoneNumber: zod.string().min(1, { message: 'Phone No is required' }),
++  mpin: zod.string().min(1, { message: 'mpin is required' }),
+ });
+ 
+ type Values = zod.infer<typeof schema>;
+diff --git a/src/lib/auth/client.ts b/src/lib/auth/client.ts
+index 242f2b4..885e964 100644
+--- a/src/lib/auth/client.ts
++++ b/src/lib/auth/client.ts
+@@ -32,8 +32,8 @@ export interface SignInWithOAuthParams {
+ }
+ 
+ export interface SignInWithPasswordParams {
+-  phoneNumber: number;
+-  mpin: number;
++  phoneNumber: string;
++  mpin: string;
+ }
+ 
+ export interface ResetPasswordParams {
+@@ -60,8 +60,8 @@ class AuthClient {
+     return { error: 'Social authentication not implemented' };
+   }
+ 
+-  async signInWithPassword(params: {phoneNumber:number, mpin:number}): Promise<{ error?: unknown }> {
+-    const { phoneNumber, mpin } : {phoneNumber:number, mpin : number} = params;
++  async signInWithPassword(params: {phoneNumber:string, mpin:string}): Promise<{ error?: unknown }> {
++    const { phoneNumber, mpin } : {phoneNumber:string, mpin : string} = params;
+ 
+ try{  
+   const profResp = await axiosInstance.post(
+-- 
+2.25.1
+

@@ -1,0 +1,139 @@
+From 23869a3f809a11567bda0240402224eabb3d7b19 Mon Sep 17 00:00:00 2001
+From: Brijesh Bhalala <brijeshbhalala2324@gmail.com>
+Date: Thu, 4 Jul 2024 15:59:01 +0530
+Subject: [PATCH] solved build errors
+
+---
+ src/app/dashboard/yuvak/page.js      |  2 +-
+ src/components/auth/sign-in-form.tsx |  9 ++++-----
+ src/lib/auth/client.ts               | 25 +++++++++++++++----------
+ src/utils/FetchApi.js                |  2 +-
+ 4 files changed, 21 insertions(+), 17 deletions(-)
+
+diff --git a/src/app/dashboard/yuvak/page.js b/src/app/dashboard/yuvak/page.js
+index 5f1d137..d77366f 100644
+--- a/src/app/dashboard/yuvak/page.js
++++ b/src/app/dashboard/yuvak/page.js
+@@ -14,7 +14,7 @@ import { YuvakAdd } from '@/components/dashboard/yuvak/YuvakAdd';
+ import { YuvakTable } from '@/components/dashboard/yuvak/YuvakTable';
+ import { useUserStore } from "@/store/UseStore";
+ import { Card, InputAdornment, OutlinedInput } from '@mui/material';
+-import axiosInstance, { fetchApi } from '@/utils/FetchApi';
++import axiosInstance from '@/utils/FetchApi';
+ 
+ export default function Page() {
+   const [openAddModal, setOpenAddModal] = useState(false);
+diff --git a/src/components/auth/sign-in-form.tsx b/src/components/auth/sign-in-form.tsx
+index 3dc4a7a..76043d1 100644
+--- a/src/components/auth/sign-in-form.tsx
++++ b/src/components/auth/sign-in-form.tsx
+@@ -24,13 +24,12 @@ import { useUser } from '@/hooks/use-user';
+ import { InputAdornment } from '@mui/material';
+ 
+ const schema = zod.object({
+-  phoneNumber: zod.string().min(1, { message: 'Phone No is required' }),
+-  mpin: zod.string().min(1, { message: 'mpin is required' }),
++  phoneNumber: zod.number().min(1, { message: 'Phone No is required' }),
++  mpin: zod.number().min(1, { message: 'mpin is required' }),
+ });
+ 
+ type Values = zod.infer<typeof schema>;
+ 
+-const defaultValues = { phoneNumber: '', mpin: '' } satisfies Values;
+ 
+ export function SignInForm(): React.JSX.Element {
+   const router = useRouter();
+@@ -46,7 +45,7 @@ export function SignInForm(): React.JSX.Element {
+     handleSubmit,
+     setError,
+     formState: { errors },
+-  } = useForm<Values>({defaultValues,resolver: zodResolver(schema) });
++  } = useForm<Values>({resolver: zodResolver(schema) });
+ 
+   const onSubmit = React.useCallback(
+     async (values: Values): Promise<void> => {
+@@ -54,7 +53,7 @@ export function SignInForm(): React.JSX.Element {
+ 
+       const { error } = await authClient.signInWithPassword(values);
+ 
+-      if (error) {
++      if (error && typeof error === 'string') {
+         setError('root', { type: 'server', message: error });
+         setIsPending(false);
+         return;
+diff --git a/src/lib/auth/client.ts b/src/lib/auth/client.ts
+index 722fb65..242f2b4 100644
+--- a/src/lib/auth/client.ts
++++ b/src/lib/auth/client.ts
+@@ -1,8 +1,10 @@
++/* eslint-disable camelcase -- for token */
++/*eslint eslint-comments/require-description: error -- If you use directive comments, you should explain why you use them. */
++ 
+ 'use client';
+ 
+ import type { User } from '@/types/user'
+-import * as qs from 'qs'
+-import axiosInstance, { fetchApi } from '@/utils/FetchApi';
++import axiosInstance from '@/utils/FetchApi';
+ 
+ function generateToken(): string {
+   const arr = new Uint8Array(12);
+@@ -38,6 +40,11 @@ export interface ResetPasswordParams {
+   email: string;
+ }
+ 
++interface LoginResponse {
++  access_token: string;
++  refresh_token: string;
++}
++
+ class AuthClient {
+   async signUp(_: SignUpParams): Promise<{ error?: string }> {
+     // Make API request
+@@ -54,24 +61,22 @@ class AuthClient {
+   }
+ 
+   async signInWithPassword(params: {phoneNumber:number, mpin:number}): Promise<{ error?: unknown }> {
+-    const { phoneNumber, mpin } = params;
+-
+-try{
++    const { phoneNumber, mpin } : {phoneNumber:number, mpin : number} = params;
+ 
+-  
++try{  
+   const profResp = await axiosInstance.post(
+      "/user-auth/phone/login-with-phone-no-mpin",
+-    { phoneNumber: `+91${phoneNumber}` , mpin }
++    { phoneNumber: `+91${phoneNumber.toString()}` , mpin }
+   );
+ 
+  
+-  const access_token = profResp.data.access_token
+-  const refresh_token = profResp.data.refresh_token
++  const access_token: string = (profResp.data as LoginResponse).access_token;
++  const refresh_token:string = (profResp.data as LoginResponse).refresh_token;
+   localStorage.setItem('access_token', access_token);
+   localStorage.setItem('refresh_token', refresh_token);
+ }
+   catch(error){
+-console.log("Error while login",error);
++// console.log("Error while login",error);
+ if (error) {
+   return { error: 'Invalid credentials' };
+ }
+diff --git a/src/utils/FetchApi.js b/src/utils/FetchApi.js
+index fc30fb0..9826b1b 100644
+--- a/src/utils/FetchApi.js
++++ b/src/utils/FetchApi.js
+@@ -44,7 +44,7 @@ const handleError = async (error) => {
+ 
+       return axios(originalRequest);
+     } catch (refreshError) {
+-      console.error('Failed to refresh token:', refreshError);
++      // console.error('Failed to refresh token:', refreshError);
+       return Promise.reject(refreshError);
+     }
+   }
+-- 
+2.25.1
+

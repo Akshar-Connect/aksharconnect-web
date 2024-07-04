@@ -24,13 +24,12 @@ import { useUser } from '@/hooks/use-user';
 import { InputAdornment } from '@mui/material';
 
 const schema = zod.object({
-  phoneNumber: zod.string().min(1, { message: 'Phone No is required' }),
-  mpin: zod.string().min(1, { message: 'mpin is required' }),
+  phoneNumber: zod.number().min(1, { message: 'Phone No is required' }),
+  mpin: zod.number().min(1, { message: 'mpin is required' }),
 });
 
 type Values = zod.infer<typeof schema>;
 
-const defaultValues = { phoneNumber: '', mpin: '' } satisfies Values;
 
 export function SignInForm(): React.JSX.Element {
   const router = useRouter();
@@ -46,7 +45,7 @@ export function SignInForm(): React.JSX.Element {
     handleSubmit,
     setError,
     formState: { errors },
-  } = useForm<Values>({defaultValues,resolver: zodResolver(schema) });
+  } = useForm<Values>({resolver: zodResolver(schema) });
 
   const onSubmit = React.useCallback(
     async (values: Values): Promise<void> => {
@@ -54,7 +53,7 @@ export function SignInForm(): React.JSX.Element {
 
       const { error } = await authClient.signInWithPassword(values);
 
-      if (error) {
+      if (error && typeof error === 'string') {
         setError('root', { type: 'server', message: error });
         setIsPending(false);
         return;

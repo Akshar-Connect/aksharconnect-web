@@ -44,7 +44,7 @@ const handleError = async (error) => {
 
       return axios(originalRequest);
     } catch (refreshError) {
-      console.error('Failed to refresh token:', refreshError);
+      // console.error('Failed to refresh token:', refreshError);
       return Promise.reject(refreshError);
     }
   }

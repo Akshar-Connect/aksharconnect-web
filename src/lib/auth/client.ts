@@ -1,8 +1,10 @@
+/* eslint-disable camelcase -- for token */
+/*eslint eslint-comments/require-description: error -- If you use directive comments, you should explain why you use them. */
+ 
 'use client';
 
 import type { User } from '@/types/user'
-import * as qs from 'qs'
-import axiosInstance, { fetchApi } from '@/utils/FetchApi';
+import axiosInstance from '@/utils/FetchApi';
 
 function generateToken(): string {
   const arr = new Uint8Array(12);
@@ -38,6 +40,11 @@ export interface ResetPasswordParams {
   email: string;
 }
 
+interface LoginResponse {
+  access_token: string;
+  refresh_token: string;
+}
+
 class AuthClient {
   async signUp(_: SignUpParams): Promise<{ error?: string }> {
     // Make API request
@@ -54,24 +61,22 @@ class AuthClient {
   }
 
   async signInWithPassword(params: {phoneNumber:number, mpin:number}): Promise<{ error?: unknown }> {
-    const { phoneNumber, mpin } = params;
+    const { phoneNumber, mpin } : {phoneNumber:number, mpin : number} = params;
 
-try{
-
-  
+try{  
   const profResp = await axiosInstance.post(
      "/user-auth/phone/login-with-phone-no-mpin",
-    { phoneNumber: `+91${phoneNumber}` , mpin }
+    { phoneNumber: `+91${phoneNumber.toString()}` , mpin }
   );
 
  
-  const access_token = profResp.data.access_token
-  const refresh_token = profResp.data.refresh_token
+  const access_token: string = (profResp.data as LoginResponse).access_token;
+  const refresh_token:string = (profResp.data as LoginResponse).refresh_token;
   localStorage.setItem('access_token', access_token);
   localStorage.setItem('refresh_token', refresh_token);
 }
   catch(error){
-console.log("Error while login",error);
+// console.log("Error while login",error);
 if (error) {
   return { error: 'Invalid credentials' };
 }

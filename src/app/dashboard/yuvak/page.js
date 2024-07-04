@@ -14,7 +14,7 @@ import { YuvakAdd } from '@/components/dashboard/yuvak/YuvakAdd';
 import { YuvakTable } from '@/components/dashboard/yuvak/YuvakTable';
 import { useUserStore } from "@/store/UseStore";
 import { Card, InputAdornment, OutlinedInput } from '@mui/material';
-import axiosInstance, { fetchApi } from '@/utils/FetchApi';
+import axiosInstance from '@/utils/FetchApi';
 
 export default function Page() {
   const [openAddModal, setOpenAddModal] = useState(false);

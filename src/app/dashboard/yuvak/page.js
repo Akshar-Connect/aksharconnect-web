@@ -1,61 +1,46 @@
 'use client';
 
 import * as React from 'react';
+import { useEffect, useState } from 'react';
+import { useUserStore } from '@/store/UseStore';
+import axiosInstance from '@/utils/FetchApi';
+import { Card, InputAdornment, OutlinedInput } from '@mui/material';
 import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-import { useState, useEffect } from 'react';
 import { Download as DownloadIcon } from '@phosphor-icons/react/dist/ssr/Download';
+import { MagnifyingGlass as MagnifyingGlassIcon } from '@phosphor-icons/react/dist/ssr/MagnifyingGlass';
 import { Plus as PlusIcon } from '@phosphor-icons/react/dist/ssr/Plus';
 import { Upload as UploadIcon } from '@phosphor-icons/react/dist/ssr/Upload';
 
-import { MagnifyingGlass as MagnifyingGlassIcon } from '@phosphor-icons/react/dist/ssr/MagnifyingGlass';
 import { YuvakAdd } from '@/components/dashboard/yuvak/YuvakAdd';
 import { YuvakTable } from '@/components/dashboard/yuvak/YuvakTable';
-import { useUserStore } from "@/store/UseStore";
-import { Card, InputAdornment, OutlinedInput } from '@mui/material';
-import axiosInstance from '@/utils/FetchApi';
 
 export default function Page() {
   const [openAddModal, setOpenAddModal] = useState(false);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(25);
-  const [searchTerm, setSearchTerm] = React.useState("");
+  const [searchTerm, setSearchTerm] = React.useState('');
   const [yuvakData, setYuvakData] = React.useState([]);
 
+  React.useEffect(() => {
+    const requestSearch = async () => {
+      try {
+        let data;
+        const profResp = await axiosInstance.get('/user-profile/find-by-name-like', { params: { name: searchTerm } });
 
-React.useEffect(()=>{
-  const requestSearch = async() => {
-    try {
-      let data;
-      const profResp = await axiosInstance.get(
-         "/user-profile/find-by-name-like",
-        {params:{name:searchTerm}}
-      );
+        data = profResp.data;
+        setYuvakData(data);
+      } catch (error) {
+        throw new Error(`Error occurs while fetching Yuvak Data, ${error}`);
+      }
+    };
+    requestSearch();
+  }, [searchTerm]);
 
-      data =profResp.data;
-      setYuvakData(data)
+  const [userDetails, setUserDetails] = useUserStore((state) => [state.userDetailsStore, state.updateUserDetails]);
 
-    } catch (error) {
-      throw new Error(
-        `Error occurs while fetching Yuvak Data, ${error}`
-      );
-    }
-  };
-  requestSearch()
-},[searchTerm])
-
-  const [userDetails, setUserDetails] = useUserStore((state) => [
-    state.userDetailsStore,
-    state.updateUserDetails,
-  ]);
-
-  const [roles, setRoles] = useUserStore((state) => [
-    state.rolesStore,
-    state.setRoles,
-  ]);
-
-
+  const [roles, setRoles] = useUserStore((state) => [state.rolesStore, state.setRoles]);
 
   const handleUserDetailsUpdate = (newDetails) => {
     setUserDetails(newDetails);
@@ -84,7 +69,6 @@ React.useEffect(()=>{
     setPage(0);
   };
 
-
   return (
     <Stack spacing={3}>
       <Stack direction="row" spacing={3}>
@@ -110,21 +94,21 @@ React.useEffect(()=>{
         </div>
       </Stack>
       <Card sx={{ p: 2 }}>
-      <OutlinedInput
-        defaultValue=""
-        fullWidth
-        onChange={(e) => {
-          setSearchTerm(e.target.value);  }
-        }
-        placeholder="Search Yuvak"
-        startAdornment={
-          <InputAdornment position="start">
-            <MagnifyingGlassIcon fontSize="var(--icon-fontSize-md)" />
-          </InputAdornment>
-        }
-        sx={{ maxWidth: '500px' }}
-      />
-    </Card>
+        <OutlinedInput
+          defaultValue=""
+          fullWidth
+          onChange={(e) => {
+            setSearchTerm(e.target.value);
+          }}
+          placeholder="Search Yuvak"
+          startAdornment={
+            <InputAdornment position="start">
+              <MagnifyingGlassIcon fontSize="var(--icon-fontSize-md)" />
+            </InputAdornment>
+          }
+          sx={{ maxWidth: '500px' }}
+        />
+      </Card>
       <YuvakTable
         count={Number(Object.values(yuvakData).length)}
         page={page}
@@ -138,4 +122,3 @@ React.useEffect(()=>{
     </Stack>
   );
 }
-

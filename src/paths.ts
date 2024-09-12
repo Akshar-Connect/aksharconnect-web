@@ -4,7 +4,7 @@ export const paths = {
   dashboard: {
     overview: '/dashboard',
     account: '/dashboard/account',
-    customers: '/dashboard/customers',
+    spiritual: '/dashboard/spiritual',
     role: '/dashboard/role',
     yuvak: '/dashboard/yuvak',
     integrations: '/dashboard/integrations',

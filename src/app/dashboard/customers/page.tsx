@@ -111,7 +111,7 @@ const customers = [
 
 export default function Page(): React.JSX.Element {
   const page = 0;
-  const rowsPerPage = 5;
+  const rowsPerPage = 5; 
 
   const paginatedCustomers = applyPagination(customers, page, rowsPerPage);
 

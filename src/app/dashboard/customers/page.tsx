@@ -107,7 +107,7 @@ const customers = [
     address: { city: 'San Diego', country: 'USA', state: 'California', street: '75247' },
     createdAt: dayjs().subtract(2, 'hours').toDate(),
   },
-] satisfies Customer[];
+] satisfies Customer[];  
 
 export default function Page(): React.JSX.Element {
   const page = 0;

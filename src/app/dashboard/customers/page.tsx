@@ -99,7 +99,7 @@ const customers = [
     createdAt: dayjs().subtract(2, 'hours').toDate(),
   },
   {
-    id: 'USR-001',
+    id: 'USR-001ssaaaa',
     name: 'Miron Vitold',
     avatar: '/assets/avatar-1.png',
     email: 'miron.vitold@devias.io',
